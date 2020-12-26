@@ -6,3 +6,5 @@
 `pip install .`
 
 
+# waveshare e-ink display
+https://github.com/waveshare/e-Paper/blob/master/RaspberryPi_JetsonNano/python/readme_rpi_EN.txt

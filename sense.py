@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-
 from sds011 import *
 import csv
 import datetime
 import time
 import sys
-
-print("staring", file=sys.stderr)
+import os
 
 sensor = SDS011("/dev/ttyUSB0")
 
@@ -16,7 +14,7 @@ OUTPUT = "samples.csv"
 
 addHeader = True
 
-print("opening", OUTPUT, file=sys.stderr)
+print(datetime.datetime.now(), "opening", OUTPUT, file=sys.stderr)
 
 with open(OUTPUT) as f:
     first_line = f.readline()
@@ -34,19 +32,29 @@ with open("samples.csv", "a") as file:
         if time.time() > end:
             break
         else:
-            # run for 15 seconds to get ready to make a reading
-            print("warming up", file=sys.stderr)
-            sensor.sleep(sleep=False)
-            time.sleep(WARMUP_SEC)
+            try: 
+                # run for 15 seconds to get ready to make a reading
+                print(datetime.datetime.now(), "warming up", file=sys.stderr)
+                sensor.sleep(sleep=False)
+                time.sleep(WARMUP_SEC)
 
-            # get reading
-            reading = sensor.query()  # Gets (pm25, pm10)
-            time.sleep(1)
-            sensor.sleep()  # Turn off fan and diode
-            print("got values:" + str(reading), file=sys.stderr)
-            writer.writerow([datetime.datetime.now().isoformat(), *reading])
-            file.flush()
+                # get reading
+                reading = sensor.query()  # Gets (pm25, pm10)
+                time.sleep(1)
 
-            print("sleeping", INTERVAL_SEC - WARMUP_SEC, "seconds", file=sys.stderr)
-            # wait until next reading
-            time.sleep(INTERVAL_SEC - WARMUP_SEC)
+                sensor.sleep()  # Turn off fan and diode
+
+                print(datetime.datetime.now(), "read values:" + str(reading), file=sys.stderr)
+                writer.writerow([datetime.datetime.now().isoformat(), *reading])
+                file.flush()
+
+                print(datetime.datetime.now(), "sleeping", INTERVAL_SEC - WARMUP_SEC, "seconds", file=sys.stderr)
+                # wait until next reading
+                time.sleep(INTERVAL_SEC - WARMUP_SEC)
+            except KeyboardInterrupt:
+                print(datetime.datetime.now(), 'interrupted; turning off sensor')
+                try:
+                    sensor.sleep()  # Turn off fan and diode
+                    sys.exit(0)
+                except SystemExit:
+                    os._exit(0)

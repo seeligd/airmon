@@ -7,7 +7,10 @@ app = Flask(__name__)
 def hello_world():
     return 'Hello, World!'
 
+@app.route('/graph')
+def send_graph():
+    return send_from_directory('.', "output.png")
 
 @app.route('/data')
 def send_data():
-    return send_from_directory('.', "samples.csv")
+    return send_from_directory('.', "all.csv")
