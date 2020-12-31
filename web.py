@@ -27,7 +27,7 @@ def send_csv():
             data = StringIO() 
 
             # only return values from within the last 24 hours
-            earliest = datetime.datetime.now() - timedelta(hours=-24)
+            earliest = datetime.datetime.now() - timedelta(hours=24)
 
             r = csv.reader(f, delimiter="\t")
             for i, row in enumerate(r):
