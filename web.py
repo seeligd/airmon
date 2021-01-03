@@ -7,14 +7,7 @@ import datetime
 from datetime import timedelta
 import dateutil.parser
 
-app = Flask(__name__)
-
-def is_valid_data(row):
-    return True
-
-@app.route('/graph')
-def send_graph():
-    return send_from_directory('.', "output.png")
+app = Flask(__name__, static_url_path="/static")
 
 @app.route('/data')
 def send_data():
