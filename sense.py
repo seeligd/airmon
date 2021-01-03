@@ -16,12 +16,16 @@ addHeader = True
 
 print(datetime.datetime.now(), "opening", OUTPUT, file=sys.stderr)
 
+if not os.path.exists(OUTPUT):
+    with open(OUTPUT, 'w'):
+        pass
+
 with open(OUTPUT) as f:
     first_line = f.readline()
     if first_line:
         addHeader = False
 
-with open("samples.csv", "a") as file:
+with open(OUTPUT, "a") as file:
     writer = csv.writer(file, delimiter = ",")
     if addHeader:
         writer.writerow(["date", "pm25", "pm10"])
