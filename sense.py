@@ -49,8 +49,9 @@ with open(OUTPUT, "a") as file:
                 sensor.sleep()  # Turn off fan and diode
 
                 print(datetime.datetime.now(), "read values:" + str(reading), file=sys.stderr)
-                writer.writerow([datetime.datetime.now().isoformat(), *reading])
-                file.flush()
+                if reading:
+                    writer.writerow([datetime.datetime.now().isoformat(), *reading])
+                    file.flush()
 
                 print(datetime.datetime.now(), "sleeping", INTERVAL_SEC - WARMUP_SEC, "seconds", file=sys.stderr)
                 # wait until next reading
