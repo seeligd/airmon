@@ -1,19 +1,27 @@
 from waveshare_epd import epd2in7
 from PIL import Image,ImageDraw,ImageFont
 import time
+import datetime
 import logging
 import requests
 import urllib.request, json
-
 import RPi.GPIO as GPIO
-import time
+
+TEST = False
 
 GPIO.setmode(GPIO.BCM)
 
 logging.basicConfig(level=logging.DEBUG)
-epd = epd2in7.EPD()
-epd.init()
+
+if not TEST:
+    epd = epd2in7.EPD()
+    epd.init()
 image = Image.new('1', (epd2in7.EPD_HEIGHT, epd2in7.EPD_WIDTH), 255)    # 255: clear the image with white
+font = ImageFont.truetype('gotham_med.ttf', 16)
+fontSmall = ImageFont.truetype('gotham_med.ttf', 12)
+fontMicro = ImageFont.truetype('gotham_med.ttf', 10)
+
+UPDATE_INTERVAL = 10 * 60 # 10 min
 
 key1 = 5
 key2 = 6
@@ -27,14 +35,11 @@ GPIO.setup(key4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 def updateDisplay(string):
     draw = ImageDraw.Draw(image)
-    #font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', 18)
-
-    draw.text((20, 50), string, fill = 0)
+    draw.text((20, 50), string, font = font, fill = 0)
     #draw.rectangle((epd2in7.EPD_WIDTH/2-10, epd2in7.EPD_HEIGHT/2-10, epd2in7.EPD_WIDTH/2+10, epd2in7.EPD_HEIGHT/2+10), fill = 0)
-    print('update display')
-    epd.display(epd.getbuffer(image))
-    #epd.sleep()
-    #epd.display_frame(epd.get_frame_buffer(image))
+    if not TEST:
+        epd.Clear(0xFF)
+        epd.display(epd.getbuffer(image))
 
 def download(fname, url):
     r = requests.get(url, allow_redirects=True)
@@ -53,20 +58,28 @@ def getGraph():
     url = 'http://rhubarb:5000/static/eink_output.png'
     download(fname, url)
 
-    #epd = epd2in7.EPD()
-    
-    logging.info("init and Clear")
-    #epd.init()
-    epd.Clear(0xFF)
+    image = Image.open(fname)
 
-    Himage = Image.open(fname)
-    epd.display(epd.getbuffer(Himage))
-    #time.sleep(10)
+    draw = ImageDraw.Draw(image)
 
-    logging.info("done")
+    response = json.loads(getSummary())
+    lastUpdated = response.get('Updated')
+    if lastUpdated:
+        lastUpdated = datetime.datetime.fromisoformat(lastUpdated).strftime("%a %b %d %I:%M%p")
+    aqi24 = response.get('AQI_2.5_24')
+    aqiNow = response.get('AQI_2.5_Now')
+    if aqi24 and aqiNow:
+        draw.text((0, 2), 'AQI 24h:', font = fontSmall, fill = 0)
+        draw.text((57, 0), str(aqi24), font = font, fill = 0)
+        draw.text((80, 2), 'now:', font = fontSmall, fill = 0)
+        draw.text((113, 0), str(aqiNow), font = font, fill = 0)
 
-    logging.info("Goto Sleep...")
-    #epd.sleep()
+    draw.text((160, 4), lastUpdated, font = fontMicro, fill = 0)
+    image.save("output.png", "PNG")
+
+    if not TEST:
+        epd.Clear(0xFF)
+        epd.display(epd.getbuffer(image))
 
 def main():
     lastRun = time.time() - 100
@@ -87,16 +100,16 @@ def main():
         elif key3state == False:
             print('Key3 Pressed')
             lastOne = "Graph"
-            lastRun = time.time() - 100
+            getGraph()
             time.sleep(0.2)
         elif key4state == False:
             print('Key4 Pressed')
             lastOne = "Stats"
-            lastRun = time.time() - 100
+            updateDisplay(getSummary())
             time.sleep(0.2)
 
         else:
-            if time.time() - lastRun > 60 * 10:
+            if time.time() - lastRun > UPDATE_INTERVAL:
                 lastRun = time.time()
                 time.sleep(.2)
                 if lastOne == "Graph":

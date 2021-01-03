@@ -1,4 +1,6 @@
-# airmon
+# Airmon
+
+## Sensing / serving
 
 ```
 pip install wheel
@@ -12,5 +14,12 @@ sudo apt install libtiff5
 pip install -r requirements.txt
 ```
 
-# waveshare e-ink display
-https://github.com/waveshare/e-Paper/blob/master/RaspberryPi_JetsonNano/python/readme_rpi_EN.txt
+## E-Ink Monitor
+Using Waveshare 2.7" e-Paper HAT
+# https://github.com/waveshare/e-Paper/blob/master/RaspberryPi_JetsonNano/python/readme_rpi_EN.txt
+```
+git clone git@github.com:waveshare/e-Paper.git
+pip install e-Paper/RaspberryPi_JetsonNano/python
+pip install -r eink/requirements.txt
+
+```
