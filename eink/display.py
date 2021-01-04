@@ -20,7 +20,7 @@ logging.basicConfig(level=logging.DEBUG,format='%(asctime)s.%(msecs)03d %(leveln
 if not TEST:
     epd = epd2in7.EPD()
     epd.init()
-image = Image.new('1', (epd2in7.EPD_HEIGHT, epd2in7.EPD_WIDTH), 255)    # 255: clear the image with white
+
 font = ImageFont.truetype('gotham_med.ttf', 16)
 fontSmall = ImageFont.truetype('gotham_med.ttf', 12)
 fontMicro = ImageFont.truetype('gotham_med.ttf', 10)
@@ -38,6 +38,11 @@ GPIO.setup(key3, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(key4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 def updateDisplay(url):
+    if not TEST:
+        epd.Clear(0xFF)
+
+    image = Image.new('1', (epd2in7.EPD_HEIGHT, epd2in7.EPD_WIDTH), 255)    # 255: clear the image with white
+
     summary = getSummary(url)
     draw = ImageDraw.Draw(image)
     draw.text((5, 50), summary, font = fontSmall, fill = 0)
@@ -46,7 +51,6 @@ def updateDisplay(url):
     image.save("output.png", "PNG")
 
     if not TEST:
-        epd.Clear(0xFF)
         epd.display(epd.getbuffer(image))
 
 def download(fname, url):
@@ -79,7 +83,9 @@ def addName(url, draw):
     draw.text((2, 162), str(urlMap.get(url)) + "/4 - " + urlMapName.get(url), font = fontMicro, fill = 0)
 
 def getGraph(url):
-    #urllib.error.HTTPError: HTTP Error 500: INTERNAL SERVER ERROR
+    if not TEST:
+        epd.Clear(0xFF)
+
     logging.info("downloading graph: " + url)
     fname = 'outside.png'
     download(fname, url)
@@ -108,7 +114,6 @@ def getGraph(url):
     image.save("output.png", "PNG")
 
     if not TEST:
-        epd.Clear(0xFF)
         epd.display(epd.getbuffer(image))
 
 def main():
@@ -122,28 +127,29 @@ def main():
         key4state = GPIO.input(key4)
 
         if key1state == False:
-            print('Key1 Pressed')
+            logging.info('Key1 Pressed')
             lastOne = INDOOR[0]
             getGraph(lastOne)
             time.sleep(0.2)
         elif key2state == False:
-            print('Key2 Pressed')
+            logging.info('Key2 Pressed')
             lastOne = OUTDOOR[0]
             getGraph(lastOne)
             time.sleep(0.2)
         elif key3state == False:
-            print('Key3 Pressed')
+            logging.info('Key3 Pressed')
             lastOne = INDOOR[1]
             updateDisplay(lastOne)
             time.sleep(0.2)
         elif key4state == False:
-            print('Key4 Pressed')
+            logging.info('Key4 Pressed')
             lastOne = OUTDOOR[1]
             updateDisplay(lastOne)
             time.sleep(0.2)
 
         else:
-            if time.time() - lastRun > UPDATE_INTERVAL:
+            currentHour = datetime.datetime.now().hour
+            if time.time() - lastRun > UPDATE_INTERVAL and currentHour > 6:
                 lastRun = time.time()
                 time.sleep(.2)
                 if lastOne in [INDOOR[0], OUTDOOR[0]]:
