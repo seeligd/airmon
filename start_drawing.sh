@@ -5,5 +5,5 @@ do
 	echo $(date) drawing
 	python draw_eink.py
 	echo $(date) done
-	sleep 60
+	sleep 30
 done
