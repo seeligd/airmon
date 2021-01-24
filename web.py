@@ -10,48 +10,32 @@ import dateutil.parser
 
 app = Flask(__name__, static_url_path="/static")
 
-def last24(): 
+SAMPLES="./output/samples.csv"
+
+def last24(includeColumns=False): 
     earliest = datetime.datetime.now() - timedelta(hours=24)
     rows = []
-    with open("./all.csv", "r") as f:
+    with open(SAMPLES, "r") as f:
         r = csv.reader(f)
-    # only return values from within the last 24 hours
         for i, row in enumerate(r):
-            if i == 0:
+            if i == 0: 
+                if includeColumns:
+                    rows.append(row)
                 continue
             dateVal = row[0]
+
+            # only return values from within the last 24 hours
             if dateutil.parser.isoparse(dateVal) > earliest:
                 rows.append(row)
     return rows
 
 @app.route('/data')
 def send_data():
-    return send_from_directory('.', "all.csv")
+    return send_from_directory('.', SAMPLES)
 
 @app.route('/all.csv')
 def send_csv():
-    def generate():
-        with open("./all.csv", "r") as f:
-            data = StringIO() 
-
-            # only return values from within the last 24 hours
-            earliest = datetime.datetime.now() - timedelta(hours=24)
-
-            r = csv.reader(f, delimiter="\t")
-            for i, row in enumerate(r):
-                if i == 0:
-                    data.write("".join(row) + "\n")
-                    yield data.getvalue()
-                    data.seek(0)
-                    data.truncate(0)
-                else:
-                    dateVal = row[0].split(",")[0]
-                    if dateutil.parser.isoparse(dateVal) > earliest:
-                        data.write("".join(row) + "\n")
-                        yield data.getvalue()
-                        data.seek(0)
-                        data.truncate(0)
-    return Response(generate(), mimetype='text/csv')
+    return Response(last24(True).join("\n"), mimetype='text/csv')
 
 @app.route('/')
 @app.route('/chart')
