@@ -60,6 +60,5 @@ sudo systemctl status airmon-eink.service
 ![InAction](images/hardware.jpg)
 
 ## Credits:
-I used [the following site extensively](https://www.instructables.com/A-Low-cost-IoT-Air-Quality-Monitor-Based-on-Raspbe/)
-to build this project 
-I am using [Pier Sans](https://pangrampangram.com/products/pier-sans?variant=32840647540790) in this project for my own personal, non-commercial use
+- I used a very similar project detailed at [https://mjrobot.org](https://mjrobot.org/2019/08/22/sensing-the-air-quality/) extensively to get started on my this project 
+- I am using [Pier Sans](https://pangrampangram.com/products/pier-sans?variant=32840647540790) in this project for my own personal, non-commercial use
