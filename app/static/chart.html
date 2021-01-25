@@ -90,7 +90,7 @@
         // const HOST = "http://192.168.1.31:5000"
 
         // type function does the data pre-processing
-        d3.csv(HOST + "/all.csv?_=" + Math.round(Date.now() / 10000), type, function (error, data) {
+        d3.csv(HOST + "/recent?_=" + Math.round(Date.now() / 10000), type, function (error, data) {
             // d3.tsv("data.tsv", type, function(error, data) {
             //   if (error) throw error;
 
@@ -275,9 +275,9 @@
     </script>
 </div>
 <div id="info">
-    <p><span class="key">AQI (2.5) </span><span class="value" id="aqi25"></span></p>
-    <p><span class="key">AQI (10) </span><span class="value" id="aqi10"></span></p>
-    <p><span class="key">Updated: </span><span class="value" id="lastUpdated"></span></p>
+    <p><span class="key">AQI (2.5) </span><span class="value" id="aqi25">...</span></p>
+    <p><span class="key">AQI (10) </span><span class="value" id="aqi10">...</span></p>
+    <p><span class="key">Updated: </span><span class="value" id="lastUpdated">...</span></p>
 </div>
 </body>
 </html>

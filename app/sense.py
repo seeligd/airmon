@@ -13,11 +13,12 @@ sensor = SDS011("/dev/ttyUSB0")
 
 WARMUP_SEC = 15
 INTERVAL_SEC = 60
+TEST = False
 
 SAMPLE_OUTPUT = "./output/samples.csv"
-GRAPH_OUTPUT = "./static/eink_output.png"
+GRAPH_OUTPUT = "./static/eink_graph.png"
 
-logging.basicConfig(level=logging.DEBUG,format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s')
+logging.basicConfig(level=logging.INFO,format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s')
 
 def conv_aqi(pmt_2_5, pmt_10):
     try:
@@ -29,6 +30,9 @@ def conv_aqi(pmt_2_5, pmt_10):
 
 
 def takeReadings(sensor, n=3): 
+    if TEST:
+        return
+
     # run for 15 seconds to get ready to make a reading
     logging.info("warming up sensor")
     sensor.sleep(sleep=False)
@@ -76,12 +80,16 @@ def main():
                     writer.writerow([datetime.datetime.now().isoformat(), *reading, *conv_aqi(*reading)])
                     file.flush()
                 
+                logging.info("drawing graph")
                 draw_graph.draw_eink_graph(SAMPLE_OUTPUT, GRAPH_OUTPUT)
                 logging.info("updated eink graph")
 
-                logging.info("sleeping " + str(INTERVAL_SEC - WARMUP_SEC) + " seconds")
-                # wait until next reading
-                time.sleep(INTERVAL_SEC - WARMUP_SEC)
+                if TEST:
+                    time.sleep(3)
+                else:
+                    logging.info("sleeping " + str(INTERVAL_SEC - WARMUP_SEC) + " seconds")
+                    # wait until next reading
+                    time.sleep(INTERVAL_SEC - WARMUP_SEC)
             except KeyboardInterrupt:
                 logging.info("interrupted; turning off sensor")
                 try:

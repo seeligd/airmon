@@ -33,7 +33,7 @@ def last24(includeColumns=False):
 def send_data():
     return send_from_directory('.', SAMPLES)
 
-@app.route('/all.csv')
+@app.route('/recent')
 def send_csv():
     def generate():
         for row in last24(True):

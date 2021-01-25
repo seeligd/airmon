@@ -8,10 +8,10 @@ import urllib
 
 TEST = True
 
-OUTDOOR=('http://rhubarb:5000/static/eink_output.png', 'http://rhubarb:5000/summary')
-INDOOR=('http://burdock:5000/static/eink_output.png', 'http://burdock:5000/summary')
+OUTDOOR=('http://rhubarb:5000/static/eink_graph.png', 'http://rhubarb:5000/summary')
+INDOOR=('http://burdock:5000/static/eink_graph.png', 'http://burdock:5000/summary')
 
-logging.basicConfig(level=logging.DEBUG,format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s')
+logging.basicConfig(level=logging.INFO,format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s')
 
 if not TEST:
     from waveshare_epd import epd2in7

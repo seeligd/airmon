@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 
 def draw_eink_graph(inputPath, outputPath):
-    #ago_24h = datetime.now() - timedelta(hours = 24)
+    ago_24h = datetime.now() - timedelta(hours = 24)
     HEIGHT = 176
     WIDTH = 264
 
@@ -15,7 +15,7 @@ def draw_eink_graph(inputPath, outputPath):
     # df['AQI (PM10) 24H'] = df['AQI (PM10)'].rolling(window='24H').mean()
     df['AQI (PM10) 1H'] = df['AQI (PM10)'].rolling(window='.25H').mean()
 
-    #df = df.loc[ago_24h:datetime.now()]
+    df = df.loc[ago_24h:datetime.now()]
 
     # we only actually care about AQI
     f = df.drop(columns=['PM2.5', 'PM10', 'AQI (PM2.5)', 'AQI (PM10)'], axis=1)
@@ -34,4 +34,4 @@ def draw_eink_graph(inputPath, outputPath):
     fig.savefig(outputPath)
 
 if __name__ == "__main__":
-    draw_eink_graph('output/all.csv','output/eink_output.png')
+    draw_eink_graph('output/samples.csv','output/eink_output.png')
