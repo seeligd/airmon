@@ -1,0 +1,12 @@
+[Unit]
+Description=Air Monitor E-Ink Display
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/home/pi/code/airmon/venv/bin/python /home/pi/code/airmon/eink/display.py > /home/pi/code/airmon/logs/eink.log 2>&1
+WorkingDirectory=/home/pi/code/airmon/app/
+User=pi
+
+[Install]
+WantedBy=multi-user.target

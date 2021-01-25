@@ -6,7 +6,7 @@ import requests
 import urllib.request, json
 import urllib
 
-TEST = True
+TEST = False
 
 OUTDOOR=('http://rhubarb:5000/static/eink_graph.png', 'http://rhubarb:5000/summary')
 INDOOR=('http://burdock:5000/static/eink_graph.png', 'http://burdock:5000/summary')
@@ -122,6 +122,7 @@ def getGraph(url):
         epd.display(epd.getbuffer(image))
 
 def main():
+    logging.info("starting...")
     lastRun = time.time() - 100
     lastOne = OUTDOOR[0]
 
