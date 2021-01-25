@@ -1,4 +1,3 @@
-from waveshare_epd import epd2in7
 from PIL import Image,ImageDraw,ImageFont
 import time
 import datetime
@@ -6,11 +5,8 @@ import logging
 import requests
 import urllib.request, json
 import urllib
-import RPi.GPIO as GPIO
 
-TEST = False
-
-GPIO.setmode(GPIO.BCM)
+TEST = True
 
 OUTDOOR=('http://rhubarb:5000/static/eink_output.png', 'http://rhubarb:5000/summary')
 INDOOR=('http://burdock:5000/static/eink_output.png', 'http://burdock:5000/summary')
@@ -18,12 +14,22 @@ INDOOR=('http://burdock:5000/static/eink_output.png', 'http://burdock:5000/summa
 logging.basicConfig(level=logging.DEBUG,format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s')
 
 if not TEST:
+    from waveshare_epd import epd2in7
+    import RPi.GPIO as GPIO
     epd = epd2in7.EPD()
     epd.init()
 
-font = ImageFont.truetype('gotham_med.ttf', 16)
-fontSmall = ImageFont.truetype('gotham_med.ttf', 12)
-fontMicro = ImageFont.truetype('gotham_med.ttf', 10)
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(key1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(key2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(key3, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(key4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+
+fontFile = 'PierSans-Bold.otf'
+font = ImageFont.truetype(fontFile, 16)
+fontSmall = ImageFont.truetype(fontFile, 12)
+fontMicro = ImageFont.truetype(fontFile, 10)
 
 UPDATE_INTERVAL = 10 * 60 # 10 min
 
@@ -32,16 +38,12 @@ key2 = 6
 key3 = 13
 key4 = 19
 
-GPIO.setup(key1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(key2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(key3, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(key4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 def updateDisplay(url):
     if not TEST:
         epd.Clear(0xFF)
 
-    image = Image.new('1', (epd2in7.EPD_HEIGHT, epd2in7.EPD_WIDTH), 255)    # 255: clear the image with white
+    image = Image.new('1', (264, 176), 255)    # 255: clear the image with white
 
     summary = getSummary(url)
     draw = ImageDraw.Draw(image)
@@ -80,7 +82,7 @@ def addName(url, draw):
             OUTDOOR[1]: 'outside stats',
     }
 
-    draw.text((2, 162), str(urlMap.get(url)) + "/4 - " + urlMapName.get(url), font = fontMicro, fill = 0)
+    draw.text((8, 162), str(urlMap.get(url)) + "/4 - " + urlMapName.get(url), font = fontMicro, fill = 0)
 
 def getGraph(url):
     if not TEST:
@@ -89,7 +91,10 @@ def getGraph(url):
     logging.info("downloading graph: " + url)
     fname = 'outside.png'
     download(fname, url)
-    image = Image.open(fname)
+    graph = Image.open(fname)
+    
+    image = Image.new('1', (264, 176), 255)    # 255: clear the image with white
+    image.paste(graph, (10, 0))
 
     draw = ImageDraw.Draw(image)
 
@@ -104,12 +109,12 @@ def getGraph(url):
     aqi24 = response.get('AQI_2.5_24')
     aqiNow = response.get('AQI_2.5_Now')
     if aqi24 and aqiNow:
-        draw.text((0, 2), 'AQI 24h:', font = fontSmall, fill = 0)
-        draw.text((57, 0), str(aqi24), font = font, fill = 0)
-        draw.text((80, 2), 'now:', font = fontSmall, fill = 0)
-        draw.text((113, 0), str(aqiNow), font = font, fill = 0)
+        draw.text((6, 2), 'AQI 24h:', font = fontSmall, fill = 0)
+        draw.text((63, 0), str(aqi24), font = font, fill = 0)
+        draw.text((86, 2), 'now:', font = fontSmall, fill = 0)
+        draw.text((119, 0), str(aqiNow), font = font, fill = 0)
 
-    draw.text((160, 4), lastUpdated, font = fontMicro, fill = 0)
+    draw.text((160, 4), lastUpdated if lastUpdated else '> Error Updating...', font = fontMicro, fill = 0)
     addName(url, draw)
     image.save("output.png", "PNG")
 
@@ -121,10 +126,11 @@ def main():
     lastOne = OUTDOOR[0]
 
     while True:
-        key1state = GPIO.input(key1)
-        key2state = GPIO.input(key2)
-        key3state = GPIO.input(key3)
-        key4state = GPIO.input(key4)
+        if not TEST:
+            key1state = GPIO.input(key1)
+            key2state = GPIO.input(key2)
+            key3state = GPIO.input(key3)
+            key4state = GPIO.input(key4)
 
         if key1state == False:
             logging.info('Key1 Pressed')
@@ -159,7 +165,7 @@ def main():
 
 if __name__ == '__main__':
     if TEST:
-        updateDisplay(OUTDOOR[1])
-        #getGraph(OUTDOOR[0])
+        #updateDisplay(OUTDOOR[1])
+        getGraph(OUTDOOR[0])
     else:
         main()

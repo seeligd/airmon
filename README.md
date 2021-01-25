@@ -1,6 +1,8 @@
 # Airmon
 This project consists of sensing code, a web server to serve the recorded data values, as well as a small script to drive an e-ink display. In my case I have one indoor sensor and one outdoor sensor, both driven by different raspberry pis. The inside sensor also drives an e-ink display. The keys on the e-ink display select which sensor's graph to view.
 
+![InAction](images/output.png)
+
 ## Hardware
 - A Raspberry Pi - I used a 3 B+ since it has full-size USB ports
 - An SD card and power supply (for the pi)
