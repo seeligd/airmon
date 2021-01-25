@@ -12,6 +12,10 @@ OUTDOOR=('http://rhubarb:5000/static/eink_graph.png', 'http://rhubarb:5000/summa
 INDOOR=('http://burdock:5000/static/eink_graph.png', 'http://burdock:5000/summary')
 
 logging.basicConfig(level=logging.INFO,format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s')
+key1 = 5
+key2 = 6
+key3 = 13
+key4 = 19
 
 if not TEST:
     from waveshare_epd import epd2in7
@@ -32,11 +36,6 @@ fontSmall = ImageFont.truetype(fontFile, 12)
 fontMicro = ImageFont.truetype(fontFile, 10)
 
 UPDATE_INTERVAL = 10 * 60 # 10 min
-
-key1 = 5
-key2 = 6
-key3 = 13
-key4 = 19
 
 
 def updateDisplay(url):

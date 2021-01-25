@@ -11,11 +11,11 @@ This project consists of sensing code, a web server to serve the recorded data v
 
 ## Sensing / Serving
 ### Code
-- `start_server.sh` - starts flask web service
-- `web.py` - flask web service
-- `sense.py` code to take readings from the air sensor; runs indefinitely and writes to
+- `app/sense.py` - runs indefinitely, measuring air once a minute, taking 3 samples and writing them to disk
   `output/samples.csv`
   `static/eink_output.png`
+- `app/web.py` - flask web service that provides an svg graph, as well as a png for use on an e-ink display
+- `services/...` - systemd service definitions to allow restarting your pis without having to log in to start up the various services
 
 ```
 sudo apt-get install libatlas-base-dev
@@ -27,7 +27,7 @@ pip install -r requirements.txt
 ```
 
 ## E-Ink Display
-- `eink/display.py` code to render e-ink display and respond to touch events
+- `eink/display.py` - consumes static/eink_output.png as well as summary information provided by the above web service and responds to key presses to show different graphs - e.g. inside / outside
   note: you'll want to update the indoor/outdoor URLs so as to display graphs from other sensors
 - [waveshare github](https://github.com/waveshare/e-Paper/blob/master/RaspberryPi_JetsonNano/python/readme_rpi_EN.txt)
 ```
@@ -62,4 +62,4 @@ sudo systemctl status airmon-eink.service
 ## Credits:
 I used [the following site extensively](https://www.instructables.com/A-Low-cost-IoT-Air-Quality-Monitor-Based-on-Raspbe/)
 to build this project 
-
+I am using [Pier Sans](https://pangrampangram.com/products/pier-sans?variant=32840647540790) in this project for my own personal, non-commercial use
