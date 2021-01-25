@@ -7,6 +7,7 @@ Type=idle
 ExecStart=/home/pi/code/airmon/venv/bin/python /home/pi/code/airmon/app/sense.py > /home/pi/code/airmon/logs/sense.log 2>&1
 WorkingDirectory=/home/pi/code/airmon/app/
 User=pi
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
