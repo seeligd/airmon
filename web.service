@@ -1,0 +1,13 @@
+[Unit]
+Description=Air Monitor Web App
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/home/pi/code/airmon/venv/bin/python /home/pi/code/airmon/app/web.py > /home/pi/code/airmon/logs/web.log 2>&1
+WorkingDirectory=/home/pi/code/airmon/app/
+User=pi
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

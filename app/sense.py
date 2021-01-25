@@ -17,8 +17,6 @@ INTERVAL_SEC = 60
 SAMPLE_OUTPUT = "./output/samples.csv"
 GRAPH_OUTPUT = "./static/eink_output.png"
 
-addHeader = True
-
 logging.basicConfig(level=logging.DEBUG,format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s')
 
 def conv_aqi(pmt_2_5, pmt_10):
@@ -51,6 +49,7 @@ def takeReadings(sensor, n=3):
     return pmt_2_5, pmt_10
 
 def main():
+    addHeader = True
     if not os.path.exists(SAMPLE_OUTPUT):
         logging.info("creating file " + SAMPLE_OUTPUT)
         with open(SAMPLE_OUTPUT, 'w'):

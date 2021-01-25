@@ -35,12 +35,14 @@ def send_data():
 
 @app.route('/all.csv')
 def send_csv():
-    return Response(last24(True).join("\n"), mimetype='text/csv')
+    def generate():
+        for row in last24(True):
+            yield ','.join(row) + '\n'
+    return Response(generate(), mimetype='text/csv')
 
 @app.route('/')
-@app.route('/chart')
 def send_chart():
-    return send_from_directory('.', "chart.html")
+    return send_from_directory('./static', "chart.html")
 
 @app.route('/summary')
 def summary():
@@ -58,3 +60,7 @@ def summary():
                 'AQI_2.5_24': -1,
                 'AQI_2.5_Now': -1
                 })
+
+if __name__ == "__main__":
+    app.debug = True
+    app.run(host="0.0.0.0")
