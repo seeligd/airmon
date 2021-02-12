@@ -84,9 +84,6 @@ def addName(url, draw):
     draw.text((8, 162), str(urlMap.get(url)) + "/4 - " + urlMapName.get(url), font = fontMicro, fill = 0)
 
 def getGraph(url):
-    if not TEST:
-        epd.Clear(0xFF)
-
     logging.info("downloading graph: " + url)
     fname = 'outside.png'
     download(fname, url)
@@ -118,6 +115,7 @@ def getGraph(url):
     image.save("output.png", "PNG")
 
     if not TEST:
+        epd.Clear(0xFF)
         epd.display(epd.getbuffer(image))
 
 def main():
