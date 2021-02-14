@@ -90,6 +90,12 @@ def main():
                     logging.info("sleeping " + str(INTERVAL_SEC - WARMUP_SEC) + " seconds")
                     # wait until next reading
                     time.sleep(INTERVAL_SEC - WARMUP_SEC)
+            except ValueError:
+                renamed_file = SAMPLE_OUTPUT + "-" + str(time.time())
+                logging.info("value error; moving file to " + renamed_file)
+                os.rename(SAMPLE_OUTPUT, renamed_file)
+                sys.exit(0)
+                
             except KeyboardInterrupt:
                 logging.info("interrupted; turning off sensor")
                 try:
