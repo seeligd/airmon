@@ -17,4 +17,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable airmon-eink.service
 sudo systemctl start airmon-eink.service
 sudo systemctl status airmon-eink.service
+
+# add to crontab to check for network connectivity every 5 minutes
+#*/5 * * * * /usr/bin/sudo -H /home/pi/code/airmon/services >> /dev/null 2>&1
 ```
